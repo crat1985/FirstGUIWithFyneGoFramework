@@ -27,10 +27,12 @@ func openFileFunction(f fyne.URIReadCloser, err error) {
 		dialog.NewError(rerr, w).Show()
 	}
 	filePath = f.URI().Path()
+	fileName = f.URI().Name()
 	fileContent = string(fileContentTemp)
 	multiLineEntry.SetText(fileContent)
 	multiLineEntry.Enable()
 	titleOfWindow = f.URI().Name()
 	w.SetTitle(nonSavedSymbol + " " + titleOfWindow)
+	saveFileMenu.Disabled = false
 	fmt.Printf("[LOG] Fichier %s ouvert avec succès...\n", fpath)
 }
