@@ -12,7 +12,10 @@ func saveFileFunction( /*s fyne.Shortcut*/ ) {
 		dialog.NewFileSave(func(f fyne.URIWriteCloser, err error) {
 			// defer f.Close()
 			if err != nil {
-				dialog.NewError(err, w).Show()
+				printError(err)
+				return
+			}
+			if f == nil {
 				return
 			}
 			_, ferr := os.Open(f.URI().Path())
@@ -23,6 +26,7 @@ func saveFileFunction( /*s fyne.Shortcut*/ ) {
 					return
 				}
 			}
+			// setFileInfos(f.URI().Path(),fileContent,f.URI().Name(),f.URI().Name(),true)
 			filePath = f.URI().Path()
 			fileName = f.URI().Name()
 			f.Close()
@@ -31,25 +35,15 @@ func saveFileFunction( /*s fyne.Shortcut*/ ) {
 	} else {
 		filePathNotEmpty()
 	}
-	// if filePath == "" {
-	// 	dialog.NewError(fmt.Errorf("erreur 102 : la variable de chemin d'aacès est vide"), w).Show()
-	// 	return
-	// }
-
 }
 
 func filePathNotEmpty() {
 	ferr := os.WriteFile(filePath, []byte(multiLineEntry.Text), 0755)
 	if ferr != nil {
-		dialog.NewError(ferr, w).Show()
+		printError(ferr)
 		return
 	}
 	// dialog.NewInformation("Sauvegardé", "Fichier sauvegardé avec succès !", w).Show()
 	a.SendNotification(fyne.NewNotification("Sauvegardé", "Fichier sauvegardé avec succès !"))
-	w.SetTitle(titleOfWindow)
-	multiLineEntry.Enable()
-	titleOfWindow = fileName
-	w.SetTitle(titleOfWindow)
-	saveFileMenu.Disabled = false
-	// fmt.Printf("[LOG] Fichier %s ouvert avec succès...\n", filePath)
+	setFileInfos(filePath, multiLineEntry.Text, fileName, fileName, true, false)
 }

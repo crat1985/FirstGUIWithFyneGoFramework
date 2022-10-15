@@ -6,16 +6,15 @@ import (
 	"os"
 
 	"fyne.io/fyne/v2"
-	"fyne.io/fyne/v2/dialog"
 )
 
 func openFileFunction(f fyne.URIReadCloser, err error) {
 	if err != nil {
-		dialog.NewError(err, w).Show()
+		printError(err)
 		return
 	}
 	if f == nil {
-		dialog.NewError(errors.New("erreur lors de l'ouverture du fichier"), w).Show()
+		printError(errors.New("erreur lors de l'ouverture du fichier"))
 		return
 	}
 	fpath := f.URI().Path()
@@ -24,15 +23,8 @@ func openFileFunction(f fyne.URIReadCloser, err error) {
 	fileContentTemp, rerr := os.ReadFile(fpath)
 	defer f.Close()
 	if rerr != nil {
-		dialog.NewError(rerr, w).Show()
+		printError(rerr)
 	}
-	filePath = f.URI().Path()
-	fileName = f.URI().Name()
-	fileContent = string(fileContentTemp)
-	multiLineEntry.SetText(fileContent)
-	multiLineEntry.Enable()
-	titleOfWindow = f.URI().Name()
-	w.SetTitle(nonSavedSymbol + " " + titleOfWindow)
-	saveFileMenu.Disabled = false
+	setFileInfos(f.URI().Path(), string(fileContentTemp), f.URI().Name(), f.URI().Name(), true, false)
 	fmt.Printf("[LOG] Fichier %s ouvert avec succès...\n", fpath)
 }
